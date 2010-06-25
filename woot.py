@@ -27,7 +27,7 @@
 woot_index = 'http://www.woot.com/'
 poll_period = 5
 
-import sys, time
+import sys, time, socket
 import urllib, sgmllib
 
 class WootParser(sgmllib.SGMLParser) :
@@ -78,9 +78,14 @@ class WootParser(sgmllib.SGMLParser) :
         self.close()
 
 def parse_page() :
-    page = urllib.urlopen(woot_index)
-    contents = page.read()
-    page.close()
+    try :
+        page = urllib.urlopen(woot_index)
+        contents = page.read()
+        page.close()
+    except socket.error :
+        print 'error'
+        return None
+
     parser = WootParser()
     parser.parse(contents)
     return parser.get_information()
@@ -89,17 +94,19 @@ products = {}
 
 while True :
     information = parse_page()
-    product = information['product']
-    if product in products :
-        if products[product]['progress'] != information['progress'] :
+    # Make sure we actually got some information
+    if information != None :
+        product = information['product']
+        if product in products :
+            if products[product]['progress'] != information['progress'] :
+                products[product]['progress'] = information['progress']
+                print 'Remaining:', information['progress'], '\r'
+        else :
+            products[product] = { 'time':time.time() }
             products[product]['progress'] = information['progress']
+            print 'Product:', product
+            print 'Price:', information['price']
             print 'Remaining:', information['progress'], '\r'
-    else :
-        products[product] = { 'time':time.time() }
-        products[product]['progress'] = information['progress']
-        print 'Product:', product
-        print 'Price:', information['price']
-        print 'Remaining:', information['progress'], '\r'
 
     # poll for a while
     sys.stdout.flush()
