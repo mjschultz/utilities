@@ -94,20 +94,20 @@ def parse_page() :
 products = {}
 
 while True :
-    information = parse_page()
-    # Make sure we actually got some information
-    if information != None :
-        product = information['product']
+    info = parse_page()
+    # Make sure we actually got some info
+    if info != None :
+        product = info.get('product', 'None')
         if product in products :
-            if products[product]['progress'] != information['progress'] :
-                products[product]['progress'] = information['progress']
-                print 'Remaining:', information['progress'], '\r'
+            if products[product]['progress'] != info['progress'] :
+                products[product]['progress'] = info.get('progress', '0%')
+                print 'Remaining:', info['progress'], '\r'
         else :
             products[product] = { 'time':time.time() }
-            products[product]['progress'] = information['progress']
+            products[product]['progress'] = info.get('progress', '0%')
             print 'Product:', product
-            print 'Price:', information['price']
-            print 'Remaining:', information['progress'], '\r'
+            print 'Price:', info.get('price', '0.00')
+            print 'Remaining:', products[product]['progress'], '\r'
 
     # poll for a while
     sys.stdout.flush()
