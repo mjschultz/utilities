@@ -25,7 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 woot_index = 'http://www.woot.com/'
-poll_period = 5
+poll_periods = {'woot-off':5, 'normal':360}
 
 import sys, time, socket
 import urllib, sgmllib
@@ -34,7 +34,7 @@ class WootParser(sgmllib.SGMLParser) :
     def __init__(self, verbose=0) :
         sgmllib.SGMLParser.__init__(self, verbose)
         self.in_element = {}
-        self.information = {}
+        self.information = {'woot-off':False}
         # product, progress, price
 
     def get_information(self) :
@@ -97,18 +97,25 @@ while True :
     info = parse_page()
     # Make sure we actually got some info
     if info != None :
+        woot_off = info.get('woot-off', False)
         product = info.get('product', 'None')
+        progress = info.get('progress', '0%')
+        price = info.get('price', '0.00')
         if product in products :
-            if products[product]['progress'] != info['progress'] :
-                products[product]['progress'] = info.get('progress', '0%')
-                print 'Remaining:', info['progress'], '\r'
+            if woot_off == True and products[product]['progress'] != progress :
+                products[product]['progress'] = progress
+                print 'Remaining:', progress, '\r'
         else :
             products[product] = { 'time':time.time() }
-            products[product]['progress'] = info.get('progress', '0%')
+            products[product]['progress'] = progress
             print 'Product:', product
-            print 'Price:', info.get('price', '0.00')
-            print 'Remaining:', products[product]['progress'], '\r'
+            print 'Price:', price
+            if woot_off == True :
+                print 'Remaining:', progress, '\r'
 
     # poll for a while
     sys.stdout.flush()
-    time.sleep(poll_period)
+    if woot_off == True :
+        time.sleep(poll_periods['woot-off'])
+    else :
+        time.sleep(poll_periods['normal'])
