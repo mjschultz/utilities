@@ -42,13 +42,14 @@ class WootParser(sgmllib.SGMLParser) :
 
     def handle_data(self, data) :
         if 'h2' in self.in_element and self.in_element['h2'] == True :
-            self.information['product'] = data
+            self.information['product'] += data
         elif 'span' in self.in_element and self.in_element['span'] == True :
             self.information['price'] = data
 
     def start_h2(self, attr) :
         for (name, value) in attr :
             if name == 'class' and value == 'fn' :
+                self.information['product'] = ''
                 self.in_element['h2'] = True
 
     def end_h2(self) :
