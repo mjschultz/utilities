@@ -98,6 +98,10 @@ while True :
     # Make sure we actually got some info
     if info != None :
         woot_off = info.get('woot-off', False)
+        if woot_off == True :
+            woot_type = 'WOOT OFF!'
+        else :
+            woot_type = 'Woot!'
         product = info.get('product', 'None')
         progress = info.get('progress', '0%')
         price = info.get('price', '0.00')
@@ -106,6 +110,7 @@ while True :
                 products[product]['progress'] = progress
                 print 'Remaining:', progress, '\r'
         else :
+            print '=',woot_type,'='*30
             products[product] = { 'time':time.time() }
             products[product]['progress'] = progress
             print 'Product:', product
