@@ -4,17 +4,17 @@ import os, sys, tempfile
 import shutil, subprocess
 import optparse
 
-latex_path = '/usr/texbin/latex'
-dvipng_path = '/usr/texbin/dvipng'
+latex_path = 'latex'
+dvipng_path = 'dvipng'
 dvipng_args = ['-bg Transparent', "-fg 'rgb 0.0 0.0 0.0'",
-               '-Ttight', '-D100']
+	           '-Ttight', '-D100']
 base_name = 'clatex'
 
 def create_source(content, size='normalsize') :
-	source = '\documentclass[12pt]{article}'\
-             '\usepackage{amsmath,amsfonts,amssymb}'\
-             '\usepackage[mathscr]{eucal}'\
-             '\pagestyle{empty}'
+	source = '\documentclass[12pt]{article}'
+	source += '\usepackage{amsmath,amsfonts,amssymb}'
+	source += '\usepackage[mathscr]{eucal}'
+	source += '\pagestyle{empty}'
 	source += '\\begin{document}'
 	source += '\\begin{'+size+'}'
 	source += '\\begin{math}'
